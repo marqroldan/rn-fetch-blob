@@ -13,6 +13,9 @@ export const Styles = {
     borderRadius: 15,
     backgroundColor: 'rgba(255,150,30,0.2)',
   },
+  group: {
+    marginBottom: 10,
+  },
 };
 
 export default Styles;
