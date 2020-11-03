@@ -22,11 +22,12 @@
     "image header"
   ],
   "repository": {
-    "url": "https://github.com/joltup/rn-fetch-blob.git"
+    "url": "https://github.com/marqroldan/rn-fetch-blob"
   },
-  "author": "Joltup",
+  "author": "Marq Roldan",
   "license": "MIT",
   "contributors": [
+    "Joltup (https://github.com/joltup)"
     "Ben <benhsieh@catchplay.com>",
     "wkh237 <xeiyan@gmail.com>"
   ]
