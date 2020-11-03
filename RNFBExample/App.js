@@ -17,13 +17,15 @@ export default class App extends React.Component {
   state = {
     downloading: null,
     successful: null,
+    copy: null,
     readPermission: null,
     writePermission: null,
+    downloadFolderExists: null,
   };
 
   fileDetailsCreator = () => {
     const fileName = '_dummy.pdf';
-    const downloadFolderPath = `${DownloadDir}/Now Serving`;
+    const downloadFolderPath = `${DownloadDir}/Name With Space`;
     const downloadFolderFilePath = `${downloadFolderPath}/${fileName}`;
     const downloadCacheFilePath = `${DocumentDir}/${fileName}`;
     return {
@@ -36,14 +38,17 @@ export default class App extends React.Component {
 
   fileDetails = this.fileDetailsCreator();
 
-  checkPermission = () => {
+  checkPermission = (callback = () => {}) => {
     PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
     )
       .then((value) => {
-        this.setState({
-          readPermission: value,
-        });
+        this.setState(
+          {
+            readPermission: value,
+          },
+          callback,
+        );
       })
       .catch((reason) => {
         console.error('Permission Check', reason);
@@ -52,9 +57,12 @@ export default class App extends React.Component {
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
     )
       .then((value) => {
-        this.setState({
-          writePermission: value,
-        });
+        this.setState(
+          {
+            writePermission: value,
+          },
+          callback,
+        );
       })
       .catch((reason) => {
         console.error('Permission Check', reason);
@@ -69,9 +77,11 @@ export default class App extends React.Component {
       .then((data) => {
         this.setState({
           readPermission:
-            data[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE],
+            data[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] ===
+            PermissionsAndroid.RESULTS.GRANTED,
           writePermission:
-            data[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE],
+            data[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] ===
+            PermissionsAndroid.RESULTS.GRANTED,
         });
       })
       .catch((reason) => {
@@ -79,8 +89,32 @@ export default class App extends React.Component {
       });
   };
 
+  createDirectories = async () => {
+    if (this.state.writePermission && this.state.readPermission) {
+      const dir = this.fileDetails.downloadFolderPath;
+      const isDir = await FileSystem.isDir(dir);
+      if (!isDir) {
+        try {
+          await FileSystem.mkdir(dir);
+          this.setState({
+            downloadFolderExists: true,
+          });
+        } catch (err) {
+          console.error('FileSystem MKDIR', err);
+          this.setState({
+            downloadFolderExists: false,
+          });
+        }
+      } else {
+        this.setState({
+          downloadFolderExists: true,
+        });
+      }
+    }
+  };
+
   componentDidMount() {
-    this.checkPermission();
+    this.checkPermission(this.createDirectories);
   }
 
   task = {};
@@ -96,6 +130,7 @@ export default class App extends React.Component {
       prevState.writePermission !== this.state.writePermission
     ) {
       this.fileDetails = this.fileDetailsCreator();
+      this.createDirectories();
     }
   }
 
@@ -125,9 +160,16 @@ export default class App extends React.Component {
             successful: true,
           });
           FileSystem.cp(downloadCacheFilePath, downloadFolderFilePath)
-            .then(() => {})
+            .then(() => {
+              this.setState({
+                copy: true,
+              });
+            })
             .catch((err) => {
               console.error('FileSystem Copy', err);
+              this.setState({
+                copy: false,
+              });
             });
         });
         this.task.catch((err) => {
@@ -157,6 +199,10 @@ export default class App extends React.Component {
         </View>
         <View style={Styles.group}>
           <Text>
+            Download Folder Exists:{' '}
+            {JSON.stringify(this.state.downloadFolderExists)}
+          </Text>
+          <Text>
             Read Permission: {JSON.stringify(this.state.readPermission)}
           </Text>
           <Text>
@@ -170,6 +216,7 @@ export default class App extends React.Component {
         </View>
         <Text>Downloading: {JSON.stringify(this.state.downloading)}</Text>
         <Text>Successful: {JSON.stringify(this.state.successful)}</Text>
+        <Text>Copy to Downloads: {JSON.stringify(this.state.copy)}</Text>
         <TouchableOpacity onPress={this.downloadFile} style={Styles.button}>
           <Text>Press to download sample PDF file</Text>
         </TouchableOpacity>
