@@ -8,7 +8,7 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
-    "postinstall": "npm install $(npm pack ../ | tail -1)"
+    "postinstall": "npm pack ../ | tail -1 && npm install rn-fetch-blob-0.12.0.tgz"
   },
   "dependencies": {
     "react": "16.13.1",
