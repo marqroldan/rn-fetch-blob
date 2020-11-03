@@ -1,5 +1,14 @@
 # rn-fetch-blob
-[![release](https://img.shields.io/github/release/joltup/rn-fetch-blob.svg?style=flat-square)](https://github.com/joltup/rn-fetch-blob/releases) [![npm](https://img.shields.io/npm/v/rn-fetch-blob.svg?style=flat-square)](https://www.npmjs.com/package/rn-fetch-blob) ![](https://img.shields.io/badge/PR-Welcome-brightgreen.svg?style=flat-square) [![](https://img.shields.io/badge/Wiki-Public-brightgreen.svg?style=flat-square)](https://github.com/joltup/rn-fetch-blob/wiki) [![npm](https://img.shields.io/npm/l/rn-fetch-blob.svg?maxAge=2592000&style=flat-square)]()
+### 11-04-20
+- This is a copy of the original `rn-fetch-blob` by `@joltup`
+- There won't be support coming from me, because it's mostly going to be a trial-and-error with the commits
+- This contains multiple pulls from multiple merge requests
+  - Please check the issues page to know which ones were merged
+- Support for `firebase` package will probably be dropped due to some merge requests
+  - `react-native-firebase` by `@invertase` is, in my opinion, better for `react-native`
+  - This is related to the XMLHttpRequest
+
+---------------------------
 
 A project committed to making file access and data transfer easier and more efficient for React Native developers.
 
